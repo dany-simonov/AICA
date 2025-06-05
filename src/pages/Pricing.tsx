@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
+import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, HelpCircle, Settings, ChevronDown, Diamond, Users, Building, CheckSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Pricing = () => {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
@@ -13,10 +15,9 @@ const Pricing = () => {
     setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly");
   };
 
-  // Правильно указываем числа для соответствия типам
   const discount = 20; // процент скидки при годовой оплате
   const getYearlyPrice = (monthlyPrice: number) => {
-    return Math.round(monthlyPrice * 12 * (100 - discount) / 100); // исправлено: использование числовых операций
+    return Math.round(monthlyPrice * 12 * (100 - discount) / 100);
   };
 
   const plans = [
@@ -136,6 +137,8 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -182,7 +185,7 @@ const Pricing = () => {
           {plans.map((plan) => (
             <Card 
               key={plan.id}
-              className={`relative overflow-hidden ${plan.highlighted ? 'border-blue-500 shadow-lg' : 'border-gray-200'}`}
+              className={`relative overflow-hidden hover:shadow-lg transition-shadow ${plan.highlighted ? 'border-blue-500 shadow-lg' : 'border-gray-200'}`}
             >
               {plan.highlighted && (
                 <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-bl-lg transform rotate-12">
@@ -221,12 +224,14 @@ const Pricing = () => {
                   )}
                 </div>
 
-                <Button 
-                  className={`w-full mb-6 ${plan.highlighted ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                >
-                  {plan.cta}
-                </Button>
+                <Link to="/auth">
+                  <Button 
+                    className={`w-full mb-6 hover:bg-orange-500 hover:text-white ${plan.highlighted ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                    variant={plan.highlighted ? 'default' : 'outline'}
+                  >
+                    {plan.cta}
+                  </Button>
+                </Link>
 
                 <div className="space-y-4">
                   <div>
@@ -272,7 +277,11 @@ const Pricing = () => {
                 Мы предлагаем индивидуальные решения для крупных компаний и государственных организаций.
               </p>
             </div>
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 mt-4 md:mt-0">
+            <Button 
+              size="lg" 
+              className="bg-blue-600 hover:bg-blue-700 mt-4 md:mt-0"
+              onClick={() => window.location.href = 'mailto:aica.teams@gmail.com?subject=Запрос индивидуального предложения'}
+            >
               Запросить индивидуальное предложение
             </Button>
           </div>
@@ -288,7 +297,7 @@ const Pricing = () => {
               <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
                 <CardHeader className="cursor-pointer">
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">{faq.question}</CardTitle>
+                    <CardTitle className="text-lg hover:text-orange-500 transition-colors">{faq.question}</CardTitle>
                     <ChevronDown className="h-5 w-5 text-gray-500" />
                   </div>
                 </CardHeader>
@@ -373,12 +382,16 @@ const Pricing = () => {
             Выберите подходящий тариф и убедитесь в преимуществах AICA для вашего бизнеса
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Начать бесплатно
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Запросить демо
-            </Button>
+            <Link to="/auth">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                Начать бесплатно
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                Запросить демо
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

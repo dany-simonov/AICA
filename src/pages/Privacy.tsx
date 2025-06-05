@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
+import Header from '@/components/Header';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Search, Download, Clock, ChevronRight, ChevronDown } from "lucide-react";
 
 const Privacy = () => {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>("introduction");
 
   const sections = [
     {
@@ -156,6 +157,96 @@ const Privacy = () => {
       `
     },
     {
+      id: "terms",
+      title: "Условия использования",
+      content: `
+        <h3 class="text-lg font-semibold mb-4">1. Общие положения</h3>
+        <p class="mb-4">
+          1.1. Настоящие Условия использования (далее — «Условия») регулируют отношения между ООО "AICA Teams" (далее — «Компания») и пользователями платформы AICA (далее — «Пользователи» или «Вы»).
+        </p>
+        <p class="mb-4">
+          1.2. Используя Платформу AICA, Вы подтверждаете, что полностью принимаете настоящие Условия. Если Вы не согласны с каким-либо пунктом Условий, Вам следует прекратить использование Платформы.
+        </p>
+        <p class="mb-4">
+          1.3. Компания оставляет за собой право в одностороннем порядке изменять настоящие Условия. Изменения вступают в силу с момента их публикации на сайте.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">2. Регистрация и использование аккаунта</h3>
+        <p class="mb-4">
+          2.1. Для использования Платформы Пользователю необходимо создать аккаунт, предоставив достоверную информацию при регистрации.
+        </p>
+        <p class="mb-4">
+          2.2. Пользователь несет ответственность за безопасность своих учетных данных и обязуется не передавать их третьим лицам.
+        </p>
+        <p class="mb-4">
+          2.3. Компания оставляет за собой право заблокировать или удалить аккаунт Пользователя в случае нарушения настоящих Условий или законодательства РФ.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">3. Интеллектуальная собственность</h3>
+        <p class="mb-4">
+          3.1. Все права на Платформу AICA, включая программный код, дизайн, торговые марки, принадлежат Компании.
+        </p>
+        <p class="mb-4">
+          3.2. Пользователь сохраняет права на загружаемые им модели и данные, однако предоставляет Компании ограниченное право на их обработку в рамках предоставления услуг.
+        </p>
+        <p class="mb-4">
+          3.3. Запрещается копировать, модифицировать, распространять, декомпилировать или создавать производные произведения на основе Платформы без письменного разрешения Компании.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">4. Тарифы и оплата</h3>
+        <p class="mb-4">
+          4.1. Компания предоставляет услуги в соответствии с выбранным Пользователем тарифным планом.
+        </p>
+        <p class="mb-4">
+          4.2. Оплата производится в порядке и сроки, указанные на сайте Платформы.
+        </p>
+        <p class="mb-4">
+          4.3. Компания оставляет за собой право изменять тарифы, уведомив Пользователей не менее чем за 14 дней до вступления изменений в силу.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">5. Ограничение ответственности</h3>
+        <p class="mb-4">
+          5.1. Компания предоставляет Платформу «как есть» без каких-либо гарантий.
+        </p>
+        <p class="mb-4">
+          5.2. Компания не несет ответственности за любые прямые или косвенные убытки, возникшие в результате использования или невозможности использования Платформы.
+        </p>
+        <p class="mb-4">
+          5.3. Компания не несет ответственности за решения, принятые на основе результатов анализа, полученных с помощью Платформы.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">6. Конфиденциальность</h3>
+        <p class="mb-4">
+          6.1. Компания обязуется обеспечивать конфиденциальность данных Пользователя в соответствии с Политикой конфиденциальности.
+        </p>
+        <p class="mb-4">
+          6.2. Пользователь соглашается с тем, что Компания может использовать анонимизированные данные для улучшения Платформы и проведения статистических исследований.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">7. Применимое право и разрешение споров</h3>
+        <p class="mb-4">
+          7.1. Настоящие Условия регулируются законодательством Российской Федерации.
+        </p>
+        <p class="mb-4">
+          7.2. Все споры, возникающие между Компанией и Пользователем, подлежат разрешению путем переговоров.
+        </p>
+        <p class="mb-4">
+          7.3. В случае невозможности урегулирования спора путем переговоров, спор подлежит разрешению в судебном порядке по месту нахождения Компании.
+        </p>
+
+        <h3 class="text-lg font-semibold mb-4">8. Заключительные положения</h3>
+        <p class="mb-4">
+          8.1. Если какое-либо положение настоящих Условий признается недействительным, это не влечет недействительности остальных положений.
+        </p>
+        <p class="mb-4">
+          8.2. Настоящие Условия представляют собой полное соглашение между Компанией и Пользователем в отношении использования Платформы.
+        </p>
+        <p>
+          8.3. По всем вопросам, связанным с настоящими Условиями, Пользователь может обратиться по адресу: aica.teams@gmail.com.
+        </p>
+      `
+    },
+    {
       id: "contact",
       title: "Контактная информация",
       content: `
@@ -179,13 +270,15 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <Shield className="h-16 w-16 mx-auto mb-4 text-blue-200" />
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Политика конфиденциальности
+              Политика конфиденциальности и условия использования
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
               Как мы защищаем и обрабатываем ваши данные на платформе AICA
@@ -207,7 +300,7 @@ const Privacy = () => {
                 {sections.map(section => (
                   <li key={section.id}>
                     <button 
-                      className="text-blue-600 hover:underline flex items-center text-left"
+                      className="text-blue-600 hover:text-orange-500 transition-colors flex items-center text-left"
                       onClick={() => toggleSection(section.id)}
                     >
                       <ChevronRight className="h-4 w-4 mr-2" />
@@ -229,11 +322,11 @@ const Privacy = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full flex items-center justify-center">
+                <Button variant="outline" className="w-full flex items-center justify-center hover:text-orange-500 transition-colors">
                   <Download className="h-4 w-4 mr-2" />
                   Скачать PDF
                 </Button>
-                <Button variant="outline" className="w-full flex items-center justify-center">
+                <Button variant="outline" className="w-full flex items-center justify-center hover:text-orange-500 transition-colors">
                   <Clock className="h-4 w-4 mr-2" />
                   История изменений
                 </Button>
@@ -250,7 +343,7 @@ const Privacy = () => {
                   onClick={() => toggleSection(section.id)}
                 >
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-900">{section.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 hover:text-orange-500 transition-colors">{section.title}</h3>
                     {activeSection === section.id ? (
                       <ChevronDown className="h-6 w-6 text-gray-500" />
                     ) : (
@@ -271,7 +364,7 @@ const Privacy = () => {
           <div className="mt-12 pt-8 border-t">
             <p className="text-gray-600 text-center">
               Если у вас есть вопросы или замечания по поводу настоящей Политики конфиденциальности, 
-              пожалуйста, свяжитесь с нами по адресу <a href="mailto:aica.teams@gmail.com" className="text-blue-600 hover:underline">aica.teams@gmail.com</a>
+              пожалуйста, свяжитесь с нами по адресу <a href="mailto:aica.teams@gmail.com" className="text-blue-600 hover:text-orange-500 transition-colors">aica.teams@gmail.com</a>
             </p>
           </div>
         </div>

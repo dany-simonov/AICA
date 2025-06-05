@@ -1,10 +1,12 @@
 
 import React from 'react';
+import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Shield, BarChart3, FileText, CheckCircle, Star, ArrowRight, Users, Zap, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Landing = () => {
   const features = [
@@ -79,32 +81,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Bot className="h-8 w-8 text-blue-600" />
-                <span className="text-2xl font-bold text-blue-900">AICA</span>
-              </div>
-            </div>
-            
-            <nav className="hidden md:flex space-x-8">
-              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">Возможности</a>
-              <a href="#how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors">Как работает</a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors">Тарифы</a>
-              <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">О нас</a>
-              <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Контакты</a>
-            </nav>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="outline">Войти</Button>
-              <Button className="bg-orange-500 hover:bg-orange-600">Попробовать бесплатно</Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
@@ -122,13 +99,17 @@ const Landing = () => {
               с помощью Explainable AI, мониторинга и интеллектуальных отчетов
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
-                Попробовать бесплатно
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                Посмотреть демо
-              </Button>
+              <Link to="/auth">
+                <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
+                  Попробовать бесплатно
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link to="/how-it-works">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                  Посмотреть демо
+                </Button>
+              </Link>
             </div>
             
             {/* Stats */}
@@ -211,10 +192,12 @@ const Landing = () => {
           </div>
           
           <div className="text-center mt-12">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Начать сейчас
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/auth">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                Начать сейчас
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -226,6 +209,11 @@ const Landing = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Что говорят наши клиенты
             </h2>
+            <Link to="/reviews">
+              <Button variant="outline" className="hover:text-orange-500">
+                Смотреть все отзывы
+              </Button>
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -262,12 +250,16 @@ const Landing = () => {
             Присоединяйтесь к компаниям, которые уже используют AICA для аудита своих AI моделей
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
-              Начать бесплатный период
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Связаться с нами
-            </Button>
+            <Link to="/auth">
+              <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
+                Начать бесплатный период
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                Связаться с нами
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -313,30 +305,30 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">Продукт</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white">Возможности</a></li>
-                <li><a href="#" className="hover:text-white">Тарифы</a></li>
-                <li><a href="#" className="hover:text-white">API</a></li>
-                <li><a href="#" className="hover:text-white">Документация</a></li>
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/pricing" className="hover:text-orange-500 transition-colors">Тарифы</Link></li>
+                <li><Link to="/api" className="hover:text-orange-500 transition-colors">API</Link></li>
+                <li><Link to="/documentation" className="hover:text-orange-500 transition-colors">Документация</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Компания</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white">О нас</a></li>
-                <li><a href="#" className="hover:text-white">Блог</a></li>
-                <li><a href="#" className="hover:text-white">Карьера</a></li>
-                <li><a href="#" className="hover:text-white">Контакты</a></li>
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/blog" className="hover:text-orange-500 transition-colors">Блог</Link></li>
+                <li><Link to="/career" className="hover:text-orange-500 transition-colors">Карьера</Link></li>
+                <li><Link to="/contact" className="hover:text-orange-500 transition-colors">Контакты</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Поддержка</h4>
               <ul className="space-y-2 text-gray-300">
-                <li>📧 aica.teams@gmail.com</li>
-                <li>📍 Москва, Россия</li>
-                <li><a href="#" className="hover:text-white">Политика конфиденциальности</a></li>
-                <li><a href="#" className="hover:text-white">Условия использования</a></li>
+                <li className="hover:text-orange-500 transition-colors">📧 aica.teams@gmail.com</li>
+                <li className="hover:text-orange-500 transition-colors">📍 Москва, Россия</li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Политика конфиденциальности</Link></li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Условия использования</Link></li>
               </ul>
             </div>
           </div>

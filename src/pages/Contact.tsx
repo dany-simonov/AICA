@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,8 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -132,7 +135,7 @@ const Contact = () => {
                         <Button 
                           size="sm" 
                           variant={method.primary ? "default" : "outline"}
-                          className={method.primary ? "bg-blue-600 hover:bg-blue-700" : ""}
+                          className={`hover:text-orange-500 ${method.primary ? "bg-blue-600 hover:bg-blue-700 hover:text-white" : ""}`}
                         >
                           {method.action}
                         </Button>
@@ -292,9 +295,9 @@ const Contact = () => {
             Часто задаваемые вопросы
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="bg-white">
+            <Card className="bg-white hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">Как быстро вы отвечаете на вопросы?</CardTitle>
+                <CardTitle className="text-lg hover:text-orange-500 transition-colors">Как быстро вы отвечаете на вопросы?</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
@@ -303,9 +306,9 @@ const Contact = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-white">
+            <Card className="bg-white hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">Как получить техническую поддержку?</CardTitle>
+                <CardTitle className="text-lg hover:text-orange-500 transition-colors">Как получить техническую поддержку?</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
@@ -314,9 +317,9 @@ const Contact = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-white">
+            <Card className="bg-white hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">Могу ли я получить демо-версию платформы?</CardTitle>
+                <CardTitle className="text-lg hover:text-orange-500 transition-colors">Могу ли я получить демо-версию платформы?</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
@@ -325,9 +328,9 @@ const Contact = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-white">
+            <Card className="bg-white hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg">Какие форматы моделей поддерживаются?</CardTitle>
+                <CardTitle className="text-lg hover:text-orange-500 transition-colors">Какие форматы моделей поддерживаются?</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
@@ -346,7 +349,7 @@ const Contact = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white">
+              <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -354,7 +357,7 @@ const Contact = () => {
                     ))}
                   </div>
                   <blockquote className="text-gray-700 mb-4 italic">
-                    "{testimonial.text}"
+                    {testimonial.text}
                   </blockquote>
                   <div>
                     <div className="font-semibold text-gray-900">{testimonial.name}</div>

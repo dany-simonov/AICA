@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
+import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Calendar, User, ArrowRight, Filter, BookOpen, TrendingUp, Bot } from "lucide-react";
+import { Search, Calendar, User, ArrowRight, Filter, BookOpen, TrendingUp, Bot, MessageSquare } from "lucide-react";
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const categories = [
     { id: "all", name: "Все статьи", count: 24 },
@@ -107,9 +109,17 @@ const Blog = () => {
     return colors[categoryId as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Здесь будет логика поиска
+    console.log("Поиск:", searchQuery);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <Header />
+      
+      {/* Hero Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
@@ -129,11 +139,15 @@ const Blog = () => {
         <div className="mb-12">
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input 
-                placeholder="Поиск статей..." 
-                className="pl-10 bg-white"
-              />
+              <form onSubmit={handleSearch}>
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input 
+                  placeholder="Поиск статей..." 
+                  className="pl-10 bg-white"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
             </div>
             <Button variant="outline" className="bg-white">
               <Filter className="h-4 w-4 mr-2" />
@@ -148,7 +162,7 @@ const Blog = () => {
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category.id)}
-                className={selectedCategory === category.id ? "bg-blue-600" : "bg-white"}
+                className={selectedCategory === category.id ? "bg-blue-600 hover:bg-blue-700" : "bg-white hover:text-orange-500"}
               >
                 {category.name} ({category.count})
               </Button>
@@ -175,7 +189,7 @@ const Blog = () => {
                       </Badge>
                       <span className="text-sm text-gray-500">{article.readTime}</span>
                     </div>
-                    <CardTitle className="text-xl line-clamp-2">{article.title}</CardTitle>
+                    <CardTitle className="text-xl line-clamp-2 hover:text-orange-500 transition-colors">{article.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="text-gray-600 mb-4 line-clamp-3">
@@ -188,7 +202,7 @@ const Blog = () => {
                         <Calendar className="h-4 w-4 ml-2" />
                         <span>{article.date}</span>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="hover:text-orange-500">
                         Читать
                         <ArrowRight className="h-4 w-4 ml-1" />
                       </Button>
@@ -216,7 +230,7 @@ const Blog = () => {
                     </Badge>
                     <span className="text-sm text-gray-500">{article.readTime}</span>
                   </div>
-                  <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+                  <CardTitle className="text-lg line-clamp-2 hover:text-orange-500 transition-colors">{article.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-gray-600 mb-4 line-clamp-3">
@@ -232,7 +246,7 @@ const Blog = () => {
                       <span>{article.date}</span>
                     </div>
                   </div>
-                  <Button className="w-full mt-4" variant="outline">
+                  <Button className="w-full mt-4" variant="outline" className="hover:text-orange-500">
                     Читать статью
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
@@ -244,9 +258,32 @@ const Blog = () => {
 
         {/* Load More */}
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="bg-white">
+          <Button size="lg" variant="outline" className="bg-white hover:text-orange-500">
             Загрузить еще статьи
           </Button>
+        </div>
+
+        {/* AI Chat Bot */}
+        <div className="mt-20 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-12 text-white text-center">
+          <div className="max-w-2xl mx-auto">
+            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-blue-200" />
+            <h3 className="text-2xl font-bold mb-4">
+              Задайте вопрос нашему AI-боту
+            </h3>
+            <p className="text-blue-100 mb-8">
+              Не можете найти нужную информацию? Наш AI-помощник готов ответить на ваши вопросы
+              по Explainable AI, аудиту моделей и другим темам.
+            </p>
+            <div className="relative">
+              <Input 
+                placeholder="Задайте вопрос нашему AI-боту..."
+                className="bg-white text-gray-900 pr-32"
+              />
+              <Button className="absolute right-1 top-1 bg-orange-500 hover:bg-orange-600">
+                Спросить <Bot className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Newsletter Subscribe */}
