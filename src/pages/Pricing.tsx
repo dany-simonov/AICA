@@ -2,235 +2,295 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { CheckCircle, Star, Mail, Phone } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, HelpCircle, Settings, ChevronDown, Diamond, Users, Building, CheckSquare } from "lucide-react";
 
 const Pricing = () => {
-  const [isYearly, setIsYearly] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+
+  const toggleBillingPeriod = () => {
+    setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly");
+  };
+
+  // Правильно указываем числа для соответствия типам
+  const discount = 20; // процент скидки при годовой оплате
+  const getYearlyPrice = (monthlyPrice: number) => {
+    return Math.round(monthlyPrice * 12 * (100 - discount) / 100); // исправлено: использование числовых операций
+  };
 
   const plans = [
     {
+      id: "free",
       name: "Free",
-      price: { monthly: 0, yearly: 0 },
       description: "Для знакомства с платформой",
-      color: "border-gray-200",
-      buttonColor: "bg-gray-600 hover:bg-gray-700",
+      monthlyPrice: 0,
+      yearlyPrice: 0,
       features: [
-        "1 модель",
-        "Базовый анализ SHAP",
-        "3 отчета в месяц",
-        "Основная документация",
-        "Поддержка через чат-бот"
+        "1 пользователь",
+        "До 3 моделей",
+        "Базовый анализ Explainable AI",
+        "До 5 отчетов в месяц",
+        "Документация и база знаний",
+        "Сообщество поддержки"
       ],
       limitations: [
+        "Ограниченные отчеты",
         "Без мониторинга в реальном времени",
-        "Без экспорта в PDF",
-        "Без API доступа"
-      ]
+        "Без командного доступа"
+      ],
+      cta: "Начать бесплатно",
+      highlighted: false
     },
     {
+      id: "solo",
       name: "Solo",
-      price: { monthly: 2990, yearly: 29900 },
-      description: "Для индивидуальных специалистов",
-      color: "border-blue-200",
-      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      description: "Для индивидуальных аналитиков",
+      monthlyPrice: 2490,
+      yearlyPrice: getYearlyPrice(2490),
       features: [
+        "1 пользователь",
         "До 10 моделей",
-        "Полный Explainable AI (SHAP + LIME)",
+        "Полный анализ SHAP и LIME",
         "Неограниченные отчеты",
-        "PDF экспорт",
         "Базовый мониторинг",
-        "Email поддержка",
-        "AI чат-бот с расширенными возможностями"
+        "Экспорт отчетов в PDF",
+        "Email поддержка"
       ],
       limitations: [
-        "Без командной работы",
-        "Без API доступа"
-      ]
+        "Без API интеграции",
+        "Без командного доступа"
+      ],
+      cta: "Выбрать Solo",
+      highlighted: false
     },
     {
+      id: "team",
       name: "Team",
-      price: { monthly: 9990, yearly: 99900 },
-      description: "Для команд и малого бизнеса",
-      color: "border-orange-300",
-      buttonColor: "bg-orange-600 hover:bg-orange-700",
-      recommended: true,
+      description: "Для команд и отделов",
+      monthlyPrice: 4990,
+      yearlyPrice: getYearlyPrice(4990),
       features: [
-        "До 50 моделей",
-        "Все функции Solo",
-        "Командная работа (до 5 пользователей)",
-        "Расширенный мониторинг",
-        "API доступ",
-        "Приоритетная поддержка",
-        "Интеграция с BI системами",
-        "Кастомные алерты"
+        "До 10 пользователей",
+        "Неограниченные модели",
+        "Расширенный Explainable AI",
+        "Настраиваемые отчеты",
+        "Мониторинг в реальном времени",
+        "API интеграция",
+        "Командный доступ и роли",
+        "Приоритетная поддержка"
       ],
-      limitations: []
+      limitations: [],
+      cta: "Выбрать Team",
+      highlighted: true
     },
     {
+      id: "enterprise",
       name: "Enterprise",
-      price: { monthly: "По запросу", yearly: "По запросу" },
       description: "Для крупных организаций",
-      color: "border-purple-300",
-      buttonColor: "bg-purple-600 hover:bg-purple-700",
+      monthlyPrice: 12990,
+      yearlyPrice: getYearlyPrice(12990),
       features: [
-        "Неограниченное количество моделей",
-        "Все функции Team",
-        "Неограниченное количество пользователей",
-        "On-premise развертывание",
-        "Персональный менеджер",
-        "SLA 99.9%",
-        "Кастомная интеграция",
-        "Обучение команды",
-        "Белая маркировка"
+        "Неограниченные пользователи",
+        "Неограниченные модели и данные",
+        "Премиум Explainable AI",
+        "Расширенный governance",
+        "SLA с гарантией доступности",
+        "Выделенный менеджер",
+        "Корпоративное обучение",
+        "Безопасность корпоративного уровня",
+        "Кастомизация отчетов"
       ],
-      limitations: []
+      limitations: [],
+      cta: "Связаться с отделом продаж",
+      highlighted: false
     }
   ];
 
   const faqs = [
     {
-      question: "Можно ли сменить тариф в любое время?",
-      answer: "Да, вы можете повысить или понизить тариф в любое время. При повышении доплачиваете разницу, при понижении остаток переносится на следующий период."
+      question: "Какой тариф выбрать для начала?",
+      answer: "Мы рекомендуем начать с бесплатного тарифа Free, чтобы ознакомиться с возможностями платформы. Затем вы можете перейти на Solo или Team в зависимости от ваших потребностей."
     },
     {
-      question: "Есть ли пробный период?",
-      answer: "Да, для всех платных тарифов предоставляется 14-дневный бесплатный пробный период с полным доступом к функциям."
+      question: "Могу ли я сменить тарифный план?",
+      answer: "Да, вы можете изменить свой тарифный план в любой момент. При переходе на более высокий тариф изменения вступят в силу немедленно. При переходе на более низкий тариф изменения вступят в силу в следующем платежном периоде."
     },
     {
-      question: "Какие способы оплаты поддерживаются?",
-      answer: "Принимаем банковские карты (Visa, MasterCard, МИР), банковские переводы, PayPal и криптовалюты."
+      question: "Как осуществляется оплата?",
+      answer: "Мы принимаем оплату картами Visa, MasterCard, МИР, а также по счету для юридических лиц. Все платежи обрабатываются через защищенные платежные шлюзы."
     },
     {
-      question: "Возможен ли возврат средств?",
-      answer: "Да, мы предоставляем 30-дневную гарантию возврата средств без лишних вопросов."
+      question: "Есть ли какие-то скрытые платежи?",
+      answer: "Нет, все функции и ограничения четко указаны в описаниях тарифов. Никаких дополнительных или скрытых платежей не предусмотрено."
+    },
+    {
+      question: "Возможно ли вернуть деньги?",
+      answer: "Мы предоставляем возврат средств в течение 14 дней с момента оплаты, если вы не удовлетворены нашим сервисом и не использовали значительный объем ресурсов."
+    },
+    {
+      question: "Что такое креденшиалы модели?",
+      answer: "Креденшиалы модели - это учетные данные и параметры, необходимые для работы с вашей ML моделью, включая API ключи, конфигурацию и настройки безопасности."
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
+      {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Тарифы и подписки
+              Простые и прозрачные тарифы
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Выберите подходящий план для вашего проекта
+              Выберите подходящий план для вас или вашей команды и начните аудит моделей уже сегодня
             </p>
-            
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center space-x-4 mb-8">
-              <span className={`text-lg ${!isYearly ? 'text-white' : 'text-blue-200'}`}>
-                Помесячно
-              </span>
-              <Switch
-                checked={isYearly}
-                onCheckedChange={setIsYearly}
-                className="data-[state=checked]:bg-orange-500"
-              />
-              <span className={`text-lg ${isYearly ? 'text-white' : 'text-blue-200'}`}>
-                Ежегодно
-              </span>
-              {isYearly && (
-                <Badge className="bg-orange-500 hover:bg-orange-600">
-                  Скидка 17%
-                </Badge>
-              )}
-            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Billing Period Toggle */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center space-x-4">
+            <span className={`text-lg ${billingPeriod === "monthly" ? "font-semibold text-gray-900" : "text-gray-500"}`}>
+              Помесячно
+            </span>
+            <div className="flex items-center">
+              <Switch 
+                checked={billingPeriod === "yearly"}
+                onCheckedChange={toggleBillingPeriod}
+              />
+            </div>
+            <span className="flex items-center">
+              <span className={`text-lg ${billingPeriod === "yearly" ? "font-semibold text-gray-900" : "text-gray-500"}`}>
+                Ежегодно
+              </span>
+              <Badge className="ml-2 bg-green-100 text-green-800">
+                -{discount}%
+              </Badge>
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 mt-3">
+            При годовой оплате вы экономите {discount}%
+          </p>
+        </div>
+
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.color} ${plan.recommended ? 'ring-2 ring-orange-400 shadow-lg' : ''}`}>
-              {plan.recommended && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1">
-                    <Star className="h-4 w-4 mr-1" />
-                    Рекомендуем
-                  </Badge>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {plans.map((plan) => (
+            <Card 
+              key={plan.id}
+              className={`relative overflow-hidden ${plan.highlighted ? 'border-blue-500 shadow-lg' : 'border-gray-200'}`}
+            >
+              {plan.highlighted && (
+                <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-bl-lg transform rotate-12">
+                  Популярный
                 </div>
               )}
-              
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-600">
-                  {plan.description}
-                </CardDescription>
-                <div className="pt-4">
-                  {typeof plan.price.monthly === 'number' ? (
-                    <>
-                      <div className="text-4xl font-bold text-gray-900">
-                        {isYearly ? 
-                          (plan.price.yearly === 0 ? '₽0' : `₽${(plan.price.yearly / 12).toLocaleString('ru-RU', {maximumFractionDigits: 0})}`) :
-                          (plan.price.monthly === 0 ? '₽0' : `₽${plan.price.monthly.toLocaleString('ru-RU')}`)
-                        }
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        {plan.price.monthly === 0 ? 'навсегда' : (isYearly ? 'в месяц при годовой оплате' : 'в месяц')}
-                      </div>
-                      {isYearly && plan.price.monthly > 0 && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          ₽{plan.price.yearly.toLocaleString('ru-RU')} в год
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-2xl font-bold text-gray-900">
-                      {plan.price.monthly}
+
+              <CardHeader>
+                <div className="flex items-center">
+                  {plan.id === "free" && <Users className="h-6 w-6 text-gray-400 mr-2" />}
+                  {plan.id === "solo" && <Diamond className="h-6 w-6 text-blue-500 mr-2" />}
+                  {plan.id === "team" && <Users className="h-6 w-6 text-blue-600 mr-2" />}
+                  {plan.id === "enterprise" && <Building className="h-6 w-6 text-blue-700 mr-2" />}
+                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                </div>
+                <CardDescription>{plan.description}</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <div className="mb-6">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl font-bold text-gray-900">
+                      {billingPeriod === "monthly" ? 
+                        (plan.monthlyPrice > 0 ? `${plan.monthlyPrice.toLocaleString('ru')}` : "0") : 
+                        (plan.yearlyPrice > 0 ? `${plan.yearlyPrice.toLocaleString('ru')}` : "0")
+                      } ₽
+                    </span>
+                    <span className="text-gray-600 ml-1">
+                      /{billingPeriod === "monthly" ? "мес" : "год"}
+                    </span>
+                  </div>
+                  {plan.monthlyPrice > 0 && billingPeriod === "yearly" && (
+                    <p className="text-sm text-green-600 mt-1">
+                      Экономия {Math.round(plan.monthlyPrice * 12 * discount / 100).toLocaleString('ru')} ₽
+                    </p>
+                  )}
+                </div>
+
+                <Button 
+                  className={`w-full mb-6 ${plan.highlighted ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                  variant={plan.highlighted ? 'default' : 'outline'}
+                >
+                  {plan.cta}
+                </Button>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Включено:</h4>
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span className="text-gray-700 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {plan.limitations.length > 0 && (
+                    <div className="border-t pt-4 mt-4">
+                      <h4 className="text-sm font-medium text-gray-600 mb-2">Ограничения:</h4>
+                      <ul className="space-y-2">
+                        {plan.limitations.map((limitation, index) => (
+                          <li key={index} className="flex items-start">
+                            <HelpCircle className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
+                            <span className="text-gray-600 text-sm">{limitation}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <Button className={`w-full ${plan.buttonColor} text-white`}>
-                  {plan.name === 'Free' ? 'Начать бесплатно' : 
-                   plan.name === 'Enterprise' ? 'Связаться с отделом продаж' : 
-                   'Выбрать план'}
-                </Button>
-                
-                <div className="space-y-2">
-                  <div className="font-medium text-gray-900 text-sm">Включено:</div>
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start space-x-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                {plan.limitations.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t">
-                    <div className="font-medium text-gray-600 text-sm">Ограничения:</div>
-                    {plan.limitations.map((limitation, limitIndex) => (
-                      <div key={limitIndex} className="text-sm text-gray-500">
-                        • {limitation}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* FAQ Section */}
-        <div className="mb-16">
+        {/* Enterprise CTA */}
+        <div className="mt-16 bg-white rounded-lg p-8 shadow-lg">
+          <div className="md:flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold flex items-center">
+                <Settings className="h-6 w-6 mr-2 text-blue-600" />
+                Нужны особые условия?
+              </h3>
+              <p className="text-gray-600 mt-2">
+                Мы предлагаем индивидуальные решения для крупных компаний и государственных организаций.
+              </p>
+            </div>
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 mt-4 md:mt-0">
+              Запросить индивидуальное предложение
+            </Button>
+          </div>
+        </div>
+
+        {/* FAQs */}
+        <div className="mt-20">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             Часто задаваемые вопросы
           </h2>
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="space-y-6">
             {faqs.map((faq, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{faq.question}</CardTitle>
+              <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
+                <CardHeader className="cursor-pointer">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg">{faq.question}</CardTitle>
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">{faq.answer}</p>
@@ -240,29 +300,85 @@ const Pricing = () => {
           </div>
         </div>
 
-        {/* Contact Section */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            Нужна помощь с выбором?
+        {/* Compare All Features */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+            Сравнение всех возможностей
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Свяжитесь с нашим отделом продаж для персональной консультации
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="p-4 border text-left">Функция</th>
+                  <th className="p-4 border text-center">Free</th>
+                  <th className="p-4 border text-center">Solo</th>
+                  <th className="p-4 border text-center">Team</th>
+                  <th className="p-4 border text-center">Enterprise</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="p-4 border font-medium">Пользователи</td>
+                  <td className="p-4 border text-center">1</td>
+                  <td className="p-4 border text-center">1</td>
+                  <td className="p-4 border text-center">До 10</td>
+                  <td className="p-4 border text-center">Неограниченно</td>
+                </tr>
+                <tr>
+                  <td className="p-4 border font-medium">Модели</td>
+                  <td className="p-4 border text-center">3</td>
+                  <td className="p-4 border text-center">10</td>
+                  <td className="p-4 border text-center">Неограниченно</td>
+                  <td className="p-4 border text-center">Неограниченно</td>
+                </tr>
+                <tr>
+                  <td className="p-4 border font-medium">Explainable AI</td>
+                  <td className="p-4 border text-center">Базовый</td>
+                  <td className="p-4 border text-center">Полный</td>
+                  <td className="p-4 border text-center">Расширенный</td>
+                  <td className="p-4 border text-center">Премиум</td>
+                </tr>
+                <tr>
+                  <td className="p-4 border font-medium">Мониторинг</td>
+                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
+                  <td className="p-4 border text-center">Базовый</td>
+                  <td className="p-4 border text-center">Реальное время</td>
+                  <td className="p-4 border text-center">Продвинутый</td>
+                </tr>
+                <tr>
+                  <td className="p-4 border font-medium">API интеграция</td>
+                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
+                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
+                  <td className="p-4 border text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
+                  <td className="p-4 border text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
+                </tr>
+                <tr>
+                  <td className="p-4 border font-medium">Поддержка</td>
+                  <td className="p-4 border text-center">Сообщество</td>
+                  <td className="p-4 border text-center">Email</td>
+                  <td className="p-4 border text-center">Приоритетная</td>
+                  <td className="p-4 border text-center">Выделенный менеджер</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Final CTA */}
+        <div className="mt-20 text-center bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-12">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Готовы начать?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Выберите подходящий тариф и убедитесь в преимуществах AICA для вашего бизнеса
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              <Mail className="h-4 w-4 mr-2" />
-              aica.teams@gmail.com
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              Начать бесплатно
             </Button>
-            <Button size="lg" variant="outline">
-              <Phone className="h-4 w-4 mr-2" />
-              Заказать звонок
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              Запросить демо
             </Button>
-          </div>
-          
-          <div className="mt-8 text-sm text-gray-500">
-            <p>💳 Принимаем карты, банковские переводы, PayPal</p>
-            <p>🔒 30-дневная гарантия возврата средств</p>
-            <p>📞 Поддержка 24/7 для Enterprise клиентов</p>
           </div>
         </div>
       </div>
