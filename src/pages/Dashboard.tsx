@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Bell, Bot, FileText, Monitor, Settings, Upload, Users } from "lucide-react";
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { ModelsManager } from "@/components/dashboard/ModelsManager";
-import { DataManager } from "@/components/dashboard/DataManager";
-import { ReportsManager } from "@/components/dashboard/ReportsManager";
-import { MonitoringPanel } from "@/components/dashboard/MonitoringPanel";
+import DataManager from "@/components/dashboard/DataManager";
+import ReportsManager from "@/components/dashboard/ReportsManager";
+import MonitoringPanel from "@/components/dashboard/MonitoringPanel";
 import { AIChat } from "@/components/dashboard/AIChat";
-import { UserSettings } from "@/components/dashboard/UserSettings";
+import UserSettings from "@/components/dashboard/UserSettings";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
