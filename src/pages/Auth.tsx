@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -39,7 +39,11 @@ const Auth = () => {
           localStorage.setItem('isAuthenticated', 'true');
           localStorage.setItem('userEmail', formData.email);
           localStorage.setItem('userName', formData.name);
-          navigate('/dashboard');
+          setShowWelcome(true);
+          setTimeout(() => {
+            setShowWelcome(false);
+            navigate('/dashboard');
+          }, 3500);
         } else {
           alert('Пароли не совпадают');
         }
@@ -196,6 +200,64 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center animate-fade-in">
+            <div className="flex items-center justify-center mb-4">
+              <span className="text-2xl font-bold text-blue-900">AICA</span>
+            </div>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900">Спасибо за регистрацию!</h2>
+            <p className="text-gray-700 mb-4">Мы отправили вам приветственное письмо от <span className="font-semibold">aica.teams@gmail.com</span> на вашу почту.<br/>С уважением, команда <span className="font-semibold">AICA Teams</span>.</p>
+            <div className="flex justify-center">
+              <svg className="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+            </div>
+          </div>
+        </div>
+      )}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <Bot className="h-8 w-8 text-blue-400" />
+                <span className="text-2xl font-bold">AICA</span>
+              </div>
+              <p className="text-gray-300">
+                Инновационная платформа для аудита и управления AI моделями
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Продукт</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/pricing" className="hover:text-orange-500 transition-colors">Тарифы</Link></li>
+                <li><Link to="/documentation" className="hover:text-orange-500 transition-colors">Документация</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Компания</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/blog" className="hover:text-orange-500 transition-colors">Блог</Link></li>
+                <li><Link to="/career" className="hover:text-orange-500 transition-colors">Карьера</Link></li>
+                <li><Link to="/contact" className="hover:text-orange-500 transition-colors">Контакты</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Поддержка</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li className="hover:text-orange-500 transition-colors">📧 aica.teams@gmail.com</li>
+                <li className="hover:text-orange-500 transition-colors">📍 Москва, Россия</li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Политика конфиденциальности</Link></li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Условия использования</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 AICA. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

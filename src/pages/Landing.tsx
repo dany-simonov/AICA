@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,6 +78,9 @@ const Landing = () => {
     }
   ];
 
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -105,22 +107,17 @@ const Landing = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/how-it-works">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                  Посмотреть демо
-                </Button>
-              </Link>
             </div>
             
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-400">500+</div>
+                <div className="text-3xl font-bold text-orange-400">100+</div>
                 <div className="text-blue-100">Проанализированных моделей</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-400">98%</div>
-                <div className="text-blue-100">Точность детекции bias</div>
+                <div className="text-3xl font-bold text-orange-400">91%</div>
+                <div className="text-blue-100">Точность модели</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-orange-400">24/7</div>
@@ -256,7 +253,7 @@ const Landing = () => {
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
                 Связаться с нами
               </Button>
             </Link>
@@ -274,18 +271,42 @@ const Landing = () => {
             <p className="text-gray-300 mb-8">
               Получайте последние обновления и советы по аудиту AI моделей
             </p>
-            <div className="max-w-md mx-auto flex gap-4">
+            <form className="max-w-md mx-auto flex gap-4" onSubmit={e => {
+              e.preventDefault();
+              if (newsletterEmail) {
+                setNewsletterSuccess(true);
+                setNewsletterEmail('');
+                setTimeout(() => setNewsletterSuccess(false), 3500);
+              }
+            }}>
               <Input 
                 type="email" 
                 placeholder="Ваш email"
                 className="bg-white"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
+                required
               />
               <Button className="bg-orange-500 hover:bg-orange-600">
                 Подписаться
               </Button>
-            </div>
+            </form>
           </div>
         </div>
+        {newsletterSuccess && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center animate-fade-in">
+              <div className="flex items-center justify-center mb-4">
+                <span className="text-2xl font-bold text-blue-900">AICA</span>
+              </div>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Спасибо, что подписались!</h2>
+              <p className="text-gray-700 mb-4">Мы будем писать только по делу.<br/>Нам очень приятно.<br/><span className="font-semibold">— AICA Teams</span></p>
+              <div className="flex justify-center">
+                <svg className="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Footer */}
@@ -307,7 +328,6 @@ const Landing = () => {
               <ul className="space-y-2 text-gray-300">
                 <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
                 <li><Link to="/pricing" className="hover:text-orange-500 transition-colors">Тарифы</Link></li>
-                <li><Link to="/api" className="hover:text-orange-500 transition-colors">API</Link></li>
                 <li><Link to="/documentation" className="hover:text-orange-500 transition-colors">Документация</Link></li>
               </ul>
             </div>
@@ -334,7 +354,7 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 AICA. Все права защищены.</p>
+            <p>&copy; 2025 AICA. Все права защищены.</p>
           </div>
         </div>
       </footer>

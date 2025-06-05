@@ -1,12 +1,17 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Search, Download, Clock, ChevronRight, ChevronDown } from "lucide-react";
+import { Shield, Search, Download, Clock, ChevronRight, ChevronDown, Bot } from "lucide-react";
+import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import 'jspdf';
+import 'html2canvas';
 
 const Privacy = () => {
   const [activeSection, setActiveSection] = useState<string | null>("introduction");
+  const [search, setSearch] = useState('');
 
   const sections = [
     {
@@ -268,6 +273,35 @@ const Privacy = () => {
     setActiveSection(activeSection === sectionId ? null : sectionId);
   };
 
+  // Функция для генерации PDF
+  const handleDownloadPDF = async () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const content = document.getElementById('privacy-content');
+    if (!content) return;
+    // Только название
+    pdf.setFontSize(22);
+    pdf.text('Политика конфиденциальности AICA', 15, 22);
+    // html2canvas для остального контента
+    const canvas = await html2canvas(content, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pageWidth - 30;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 15, 35, pdfWidth, pdfHeight);
+    pdf.save('AICA-privacy-policy.pdf');
+  };
+
+  // Функция для подсветки поиска
+  const highlight = (text: string) => {
+    if (!search) return text;
+    const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return text.split(regex).map((part, i) =>
+      regex.test(part) ? <mark key={i} className="bg-yellow-200 text-black">{part}</mark> : part
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -284,7 +318,7 @@ const Privacy = () => {
               Как мы защищаем и обрабатываем ваши данные на платформе AICA
             </p>
             <p className="text-blue-100">
-              Последнее обновление: 15 января 2024
+              Последнее обновление: 5 июня 2025
             </p>
           </div>
         </div>
@@ -318,17 +352,15 @@ const Privacy = () => {
                     type="text" 
                     placeholder="Поиск в документе..." 
                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full flex items-center justify-center hover:text-orange-500 transition-colors">
+                <Button variant="outline" className="w-full flex items-center justify-center hover:text-orange-500 transition-colors" onClick={handleDownloadPDF}>
                   <Download className="h-4 w-4 mr-2" />
                   Скачать PDF
-                </Button>
-                <Button variant="outline" className="w-full flex items-center justify-center hover:text-orange-500 transition-colors">
-                  <Clock className="h-4 w-4 mr-2" />
-                  История изменений
                 </Button>
               </div>
             </div>
@@ -343,7 +375,7 @@ const Privacy = () => {
                   onClick={() => toggleSection(section.id)}
                 >
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-900 hover:text-orange-500 transition-colors">{section.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 hover:text-orange-500 transition-colors">{highlight(section.title)}</h3>
                     {activeSection === section.id ? (
                       <ChevronDown className="h-6 w-6 text-gray-500" />
                     ) : (
@@ -353,7 +385,7 @@ const Privacy = () => {
                 </div>
                 {activeSection === section.id && (
                   <CardContent className="bg-gray-50 prose max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: section.content }} />
+                    <div>{highlight(section.content.replace(/<[^>]+>/g, ''))}</div>
                   </CardContent>
                 )}
               </Card>
@@ -369,6 +401,50 @@ const Privacy = () => {
           </div>
         </div>
       </div>
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <Bot className="h-8 w-8 text-blue-400" />
+                <span className="text-2xl font-bold">AICA</span>
+              </div>
+              <p className="text-gray-300">
+                Инновационная платформа для аудита и управления AI моделями
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Продукт</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/pricing" className="hover:text-orange-500 transition-colors">Тарифы</Link></li>
+                <li><Link to="/documentation" className="hover:text-orange-500 transition-colors">Документация</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Компания</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><Link to="/about" className="hover:text-orange-500 transition-colors">О нас</Link></li>
+                <li><Link to="/blog" className="hover:text-orange-500 transition-colors">Блог</Link></li>
+                <li><Link to="/career" className="hover:text-orange-500 transition-colors">Карьера</Link></li>
+                <li><Link to="/contact" className="hover:text-orange-500 transition-colors">Контакты</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Поддержка</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li className="hover:text-orange-500 transition-colors">📧 aica.teams@gmail.com</li>
+                <li className="hover:text-orange-500 transition-colors">📍 Москва, Россия</li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Политика конфиденциальности</Link></li>
+                <li><Link to="/privacy" className="hover:text-orange-500 transition-colors">Условия использования</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 AICA. Все права защищены.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

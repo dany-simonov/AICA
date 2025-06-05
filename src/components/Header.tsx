@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
@@ -44,12 +43,6 @@ const Header = () => {
               className={`transition-colors hover:text-orange-500 ${isActive('/blog') ? 'text-orange-500' : 'text-gray-700'}`}
             >
               Блог
-            </Link>
-            <Link 
-              to="/documentation" 
-              className={`transition-colors hover:text-orange-500 ${isActive('/documentation') ? 'text-orange-500' : 'text-gray-700'}`}
-            >
-              Документация
             </Link>
             <Link 
               to="/contact" 
