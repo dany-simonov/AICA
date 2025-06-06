@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
           icons: ['lucide-react'],
-          ai: ['openai', '@huggingface/transformers', 'langchain']
+          ai: ['openai', '@huggingface/transformers']
         }
       }
     }

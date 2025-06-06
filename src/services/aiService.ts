@@ -30,7 +30,9 @@ export class AIService {
     try {
       console.log(`Generating response with ${model.name}...`);
       
-      // Симуляция разных моделей с различными стилями ответов
+      // Имитация реального API вызова с задержкой
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+      
       const responses = await this.getModelResponse(model, prompt);
       
       return {
@@ -51,7 +53,6 @@ export class AIService {
   }
 
   private async getModelResponse(model: AIModel, prompt: string): Promise<string> {
-    // Симуляция различных стилей ответов для разных моделей
     const lowerPrompt = prompt.toLowerCase();
     
     switch (model.id) {
@@ -71,9 +72,6 @@ export class AIService {
   }
 
   private async getGPT4Response(prompt: string): Promise<string> {
-    // Симуляция задержки API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
     if (prompt.includes('модел') || prompt.includes('анализ')) {
       return `**GPT-4 Omni Analysis** 🤖
 
@@ -101,8 +99,6 @@ export class AIService {
   }
 
   private async getClaudeResponse(prompt: string): Promise<string> {
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
     if (prompt.includes('этик') || prompt.includes('безопасност')) {
       return `**Claude 3 Sonnet - Этический анализ** 🧠
 
@@ -133,8 +129,6 @@ export class AIService {
   }
 
   private async getLlamaResponse(prompt: string): Promise<string> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     if (prompt.includes('код') || prompt.includes('implement')) {
       return `**Llama 3.1 - Техническое решение** 🦙
 
@@ -161,20 +155,6 @@ class ModelAuditor:
     def explain_predictions(self, sample_idx=0):
         shap_values = self.explainer.shap_values(self.X_test[sample_idx:sample_idx+1])
         return shap_values
-    
-    def detect_drift(self, X_new):
-        # KS test для numerical features
-        from scipy.stats import ks_2samp
-        drift_scores = {}
-        
-        for col in X_new.columns:
-            if X_new[col].dtype in ['int64', 'float64']:
-                statistic, p_value = ks_2samp(
-                    self.X_test[col], X_new[col]
-                )
-                drift_scores[col] = p_value
-        
-        return drift_scores
 
 # Использование:
 auditor = ModelAuditor(your_model, X_test, y_test)
@@ -193,8 +173,6 @@ performance = auditor.audit_performance()
   }
 
   private async getGeminiResponse(prompt: string): Promise<string> {
-    await new Promise(resolve => setTimeout(resolve, 1300));
-    
     if (prompt.includes('виз') || prompt.includes('график')) {
       return `**Gemini Pro - Визуализация данных** 💎
 
@@ -217,38 +195,6 @@ performance = auditor.audit_performance()
    • Data drift visualization
    • Prediction confidence distribution
 
-🎨 **Код для Plotly визуализации:**
-\`\`\`python
-import plotly.graph_objects as go
-import plotly.express as px
-
-def create_model_dashboard(metrics_df):
-    fig = go.Figure()
-    
-    # Добавляем линию точности
-    fig.add_trace(go.Scatter(
-        x=metrics_df['date'],
-        y=metrics_df['accuracy'],
-        mode='lines+markers',
-        name='Accuracy',
-        line=dict(color='#3b82f6', width=3)
-    ))
-    
-    # Добавляем threshold линию
-    fig.add_hline(y=0.95, line_dash="dash", 
-                  line_color="red", 
-                  annotation_text="Threshold")
-    
-    fig.update_layout(
-        title="Model Performance Over Time",
-        xaxis_title="Date",
-        yaxis_title="Accuracy",
-        hovermode='x unified'
-    )
-    
-    return fig
-\`\`\`
-
 Хотите, чтобы я создал специфическую визуализацию для ваших данных?`;
     }
     
@@ -256,8 +202,6 @@ def create_model_dashboard(metrics_df):
   }
 
   private async getMistralResponse(prompt: string): Promise<string> {
-    await new Promise(resolve => setTimeout(resolve, 1100));
-    
     if (prompt.includes('gdpr') || prompt.includes('регулир') || prompt.includes('compliance')) {
       return `**Mistral Large - Соответствие регуляторным требованиям** 🌟
 
@@ -277,18 +221,6 @@ def create_model_dashboard(metrics_df):
 2. **Data minimization** - минимум необходимых данных
 3. **Purpose limitation** - использование строго по назначению
 4. **Storage limitation** - ограниченное время хранения
-
-🔒 **Рекомендуемые меры:**
-• Privacy by Design в архитектуре
-• Differential Privacy для обучения
-• Federated Learning где возможно
-• Regular compliance audits
-
-📖 **Документация для аудита:**
-- Model cards с описанием ограничений
-- Data impact assessments
-- Algorithm impact assessments
-- Incident response procedures
 
 🚨 **Штрафы за несоответствие:**
 • GDPR: до 4% от оборота или €20M
