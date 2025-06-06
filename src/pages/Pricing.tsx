@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, HelpCircle, Settings, ChevronDown, Diamond, Users, Building, CheckSquare } from "lucide-react";
+import { CheckCircle, HelpCircle, Settings, Diamond, Users, Building, CheckSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Bot } from "lucide-react";
 
@@ -29,7 +30,7 @@ const Pricing = () => {
       yearlyPrice: 0,
       features: [
         "1 пользователь",
-        "До 3 моделей",
+        "1 модель",
         "Базовый анализ Explainable AI",
         "До 5 отчетов в месяц",
         "Документация и база знаний",
@@ -47,19 +48,18 @@ const Pricing = () => {
       id: "solo",
       name: "Solo",
       description: "Для индивидуальных аналитиков",
-      monthlyPrice: 2490,
-      yearlyPrice: getYearlyPrice(2490),
+      monthlyPrice: 490,
+      yearlyPrice: getYearlyPrice(490),
       features: [
         "1 пользователь",
-        "До 10 моделей",
+        "До 5 моделей",
         "Полный анализ SHAP и LIME",
         "Неограниченные отчеты",
         "Базовый мониторинг",
         "Экспорт отчетов в PDF",
-        "Email поддержка"
+        "Поддержка"
       ],
       limitations: [
-        "Без API интеграции",
         "Без командного доступа"
       ],
       cta: "Выбрать Solo",
@@ -69,15 +69,14 @@ const Pricing = () => {
       id: "team",
       name: "Team",
       description: "Для команд и отделов",
-      monthlyPrice: 4990,
-      yearlyPrice: getYearlyPrice(4990),
+      monthlyPrice: 990,
+      yearlyPrice: getYearlyPrice(990),
       features: [
-        "До 10 пользователей",
+        "До 5 пользователей",
         "Неограниченные модели",
         "Расширенный Explainable AI",
         "Настраиваемые отчеты",
         "Мониторинг в реальном времени",
-        "API интеграция",
         "Командный доступ и роли",
         "Приоритетная поддержка"
       ],
@@ -89,8 +88,8 @@ const Pricing = () => {
       id: "enterprise",
       name: "Enterprise",
       description: "Для крупных организаций",
-      monthlyPrice: 12990,
-      yearlyPrice: getYearlyPrice(12990),
+      monthlyPrice: 2990,
+      yearlyPrice: getYearlyPrice(2990),
       features: [
         "Неограниченные пользователи",
         "Неограниченные модели и данные",
@@ -119,7 +118,7 @@ const Pricing = () => {
     },
     {
       question: "Как осуществляется оплата?",
-      answer: "Мы принимаем оплату картами Visa, MasterCard, МИР, а также по счету для юридических лиц. Все платежи обрабатываются через защищенные платежные шлюзы."
+      answer: "Мы принимаем оплату картами МИР, а также по счету для юридических лиц. Все платежи обрабатываются через защищенные платежные шлюзы."
     },
     {
       question: "Есть ли какие-то скрытые платежи?",
@@ -128,10 +127,6 @@ const Pricing = () => {
     {
       question: "Возможно ли вернуть деньги?",
       answer: "Мы предоставляем возврат средств в течение 14 дней с момента оплаты, если вы не удовлетворены нашим сервисом и не использовали значительный объем ресурсов."
-    },
-    {
-      question: "Что такое креденшиалы модели?",
-      answer: "Креденшиалы модели - это учетные данные и параметры, необходимые для работы с вашей ML моделью, включая API ключи, конфигурацию и настройки безопасности."
     }
   ];
 
@@ -181,39 +176,39 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <Card 
               key={plan.id}
               className={`relative overflow-hidden hover:shadow-lg transition-shadow ${plan.highlighted ? 'border-blue-500 shadow-lg' : 'border-gray-200'}`}
             >
               {plan.highlighted && (
-                <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-bl-lg transform rotate-12">
+                <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold py-1 px-2 rounded-bl-lg">
                   Популярный
                 </div>
               )}
 
-              <CardHeader>
+              <CardHeader className="pb-4">
                 <div className="flex items-center">
                   {plan.id === "free" && <Users className="h-6 w-6 text-gray-400 mr-2" />}
                   {plan.id === "solo" && <Diamond className="h-6 w-6 text-blue-500 mr-2" />}
                   {plan.id === "team" && <Users className="h-6 w-6 text-blue-600 mr-2" />}
                   {plan.id === "enterprise" && <Building className="h-6 w-6 text-blue-700 mr-2" />}
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <CardTitle className="text-xl">{plan.name}</CardTitle>
                 </div>
-                <CardDescription>{plan.description}</CardDescription>
+                <CardDescription className="text-sm">{plan.description}</CardDescription>
               </CardHeader>
 
               <CardContent>
                 <div className="mb-6">
                   <div className="flex items-baseline">
-                    <span className="text-4xl font-bold text-gray-900">
+                    <span className="text-3xl font-bold text-gray-900">
                       {billingPeriod === "monthly" ? 
                         (plan.monthlyPrice > 0 ? `${plan.monthlyPrice.toLocaleString('ru')}` : "0") : 
                         (plan.yearlyPrice > 0 ? `${plan.yearlyPrice.toLocaleString('ru')}` : "0")
                       } ₽
                     </span>
-                    <span className="text-gray-600 ml-1">
+                    <span className="text-gray-600 ml-1 text-sm">
                       /{billingPeriod === "monthly" ? "мес" : "год"}
                     </span>
                   </div>
@@ -239,7 +234,7 @@ const Pricing = () => {
                     <ul className="space-y-2">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-start">
-                          <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
                           <span className="text-gray-700 text-sm">{feature}</span>
                         </li>
                       ))}
@@ -252,7 +247,7 @@ const Pricing = () => {
                       <ul className="space-y-2">
                         {plan.limitations.map((limitation, index) => (
                           <li key={index} className="flex items-start">
-                            <HelpCircle className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
+                            <HelpCircle className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0 mt-0.5" />
                             <span className="text-gray-600 text-sm">{limitation}</span>
                           </li>
                         ))}
@@ -294,12 +289,9 @@ const Pricing = () => {
           </h2>
           <div className="space-y-6">
             {faqs.map((faq, index) => (
-              <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
-                <CardHeader className="cursor-pointer">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg hover:text-orange-500 transition-colors">{faq.question}</CardTitle>
-                    <ChevronDown className="h-5 w-5 text-gray-500" />
-                  </div>
+              <Card key={index} className="bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg">{faq.question}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">{faq.answer}</p>
@@ -314,59 +306,59 @@ const Pricing = () => {
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
             Сравнение всех возможностей
           </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+            <table className="w-full">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="p-4 border text-left">Функция</th>
-                  <th className="p-4 border text-center">Free</th>
-                  <th className="p-4 border text-center">Solo</th>
-                  <th className="p-4 border text-center">Team</th>
-                  <th className="p-4 border text-center">Enterprise</th>
+                <tr className="bg-gradient-to-r from-blue-50 to-blue-100">
+                  <th className="p-6 text-left border-b border-gray-200 font-semibold text-gray-900">Функция</th>
+                  <th className="p-6 text-center border-b border-gray-200 font-semibold text-gray-900">Free</th>
+                  <th className="p-6 text-center border-b border-gray-200 font-semibold text-gray-900">Solo</th>
+                  <th className="p-6 text-center border-b border-gray-200 font-semibold text-blue-600">Team</th>
+                  <th className="p-6 text-center border-b border-gray-200 font-semibold text-gray-900">Enterprise</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="p-4 border font-medium">Пользователи</td>
-                  <td className="p-4 border text-center">1</td>
-                  <td className="p-4 border text-center">1</td>
-                  <td className="p-4 border text-center">До 10</td>
-                  <td className="p-4 border text-center">Неограниченно</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Пользователи</td>
+                  <td className="p-6 text-center text-gray-700">1</td>
+                  <td className="p-6 text-center text-gray-700">1</td>
+                  <td className="p-6 text-center text-blue-600 font-semibold">До 5</td>
+                  <td className="p-6 text-center text-gray-700">Неограниченно</td>
                 </tr>
-                <tr>
-                  <td className="p-4 border font-medium">Модели</td>
-                  <td className="p-4 border text-center">3</td>
-                  <td className="p-4 border text-center">10</td>
-                  <td className="p-4 border text-center">Неограниченно</td>
-                  <td className="p-4 border text-center">Неограниченно</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Модели</td>
+                  <td className="p-6 text-center text-gray-700">1</td>
+                  <td className="p-6 text-center text-gray-700">5</td>
+                  <td className="p-6 text-center text-blue-600 font-semibold">Неограниченно</td>
+                  <td className="p-6 text-center text-gray-700">Неограниченно</td>
                 </tr>
-                <tr>
-                  <td className="p-4 border font-medium">Explainable AI</td>
-                  <td className="p-4 border text-center">Базовый</td>
-                  <td className="p-4 border text-center">Полный</td>
-                  <td className="p-4 border text-center">Расширенный</td>
-                  <td className="p-4 border text-center">Премиум</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Explainable AI</td>
+                  <td className="p-6 text-center text-gray-700">Базовый</td>
+                  <td className="p-6 text-center text-gray-700">Полный</td>
+                  <td className="p-6 text-center text-blue-600 font-semibold">Расширенный</td>
+                  <td className="p-6 text-center text-gray-700">Премиум</td>
                 </tr>
-                <tr>
-                  <td className="p-4 border font-medium">Мониторинг</td>
-                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
-                  <td className="p-4 border text-center">Базовый</td>
-                  <td className="p-4 border text-center">Реальное время</td>
-                  <td className="p-4 border text-center">Продвинутый</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Мониторинг</td>
+                  <td className="p-6 text-center"><span className="text-red-600 font-bold">✖</span></td>
+                  <td className="p-6 text-center text-gray-700">Базовый</td>
+                  <td className="p-6 text-center text-blue-600 font-semibold">Реальное время</td>
+                  <td className="p-6 text-center text-gray-700">Продвинутый</td>
                 </tr>
-                <tr>
-                  <td className="p-4 border font-medium">API интеграция</td>
-                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
-                  <td className="p-4 border text-center"><span className="text-red-600">✖</span></td>
-                  <td className="p-4 border text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
-                  <td className="p-4 border text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Командный доступ</td>
+                  <td className="p-6 text-center"><span className="text-red-600 font-bold">✖</span></td>
+                  <td className="p-6 text-center"><span className="text-red-600 font-bold">✖</span></td>
+                  <td className="p-6 text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
+                  <td className="p-6 text-center"><CheckSquare className="h-5 w-5 text-green-600 mx-auto" /></td>
                 </tr>
-                <tr>
-                  <td className="p-4 border font-medium">Поддержка</td>
-                  <td className="p-4 border text-center">Сообщество</td>
-                  <td className="p-4 border text-center">Email</td>
-                  <td className="p-4 border text-center">Приоритетная</td>
-                  <td className="p-4 border text-center">Выделенный менеджер</td>
+                <tr className="hover:bg-gray-50">
+                  <td className="p-6 font-medium text-gray-900">Поддержка</td>
+                  <td className="p-6 text-center text-gray-700">Сообщество</td>
+                  <td className="p-6 text-center text-gray-700">Поддержка</td>
+                  <td className="p-6 text-center text-blue-600 font-semibold">Приоритетная</td>
+                  <td className="p-6 text-center text-gray-700">Выделенный менеджер</td>
                 </tr>
               </tbody>
             </table>
@@ -383,18 +375,20 @@ const Pricing = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/auth">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button size="lg" className="bg-orange-500 text-white hover:bg-orange-600">
                 Начать бесплатно
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" className="bg-orange-500 text-white hover:bg-orange-600">
                 Запросить демо
               </Button>
             </Link>
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
