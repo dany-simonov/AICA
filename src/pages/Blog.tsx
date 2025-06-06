@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Calendar, User, ArrowRight, Filter, BookOpen, TrendingUp, Bot, MessageSquare, ExternalLink } from "lucide-react";
+import { Search, Calendar, User, ArrowRight, BookOpen, TrendingUp, Bot, MessageSquare, ExternalLink } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 const Blog = () => {
@@ -922,7 +922,7 @@ const Blog = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Search and Filters */}
+        {/* Search and Categories */}
         <div className="mb-12">
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1 relative">
@@ -936,10 +936,6 @@ const Blog = () => {
                 />
               </form>
             </div>
-            <Button variant="outline" className="bg-white">
-              <Filter className="h-4 w-4 mr-2" />
-              Фильтры
-            </Button>
           </div>
 
           {/* Categories */}
@@ -1015,10 +1011,12 @@ const Blog = () => {
                         Источник: {article.source}
                       </p>
                     )}
-                    <Button variant="ghost" size="sm" className="hover:text-orange-500">
-                      Читать
-                      <ArrowRight className="h-4 w-4 ml-1" />
-                    </Button>
+                    <Link to={`/article/${article.id}`}>
+                      <Button variant="ghost" size="sm" className="hover:text-orange-500">
+                        Читать
+                        <ArrowRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}
@@ -1074,10 +1072,12 @@ const Blog = () => {
                       📚 {article.source}
                     </p>
                   )}
-                  <Button variant="outline" className="w-full hover:text-orange-500">
-                    Читать статью
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  <Link to={`/article/${article.id}`}>
+                    <Button variant="outline" className="w-full hover:text-orange-500">
+                      Читать статью
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
