@@ -7,53 +7,65 @@ export interface AIModel {
   maxTokens: number;
   available: boolean;
   icon: string;
+  isRealtime: boolean;
+  limitations: string;
 }
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: 'gpt-4o',
-    name: 'GPT-4 Omni',
-    provider: 'OpenAI',
-    description: 'Самая продвинутая модель OpenAI для сложных задач',
-    maxTokens: 8192,
+    id: 'hf-gpt2',
+    name: 'GPT-2',
+    provider: 'Hugging Face',
+    description: 'Базовая языковая модель для генерации текста',
+    maxTokens: 1024,
     available: true,
-    icon: '🤖'
+    icon: '🤗',
+    isRealtime: true,
+    limitations: 'Бесплатно: 1000 запросов/месяц'
   },
   {
-    id: 'claude-3-sonnet',
-    name: 'Claude 3 Sonnet',
-    provider: 'Anthropic',
-    description: 'Сбалансированная модель для анализа и рассуждений',
+    id: 'hf-distilbert',
+    name: 'DistilBERT',
+    provider: 'Hugging Face',
+    description: 'Быстрая модель для анализа текста и классификации',
+    maxTokens: 512,
+    available: true,
+    icon: '⚡',
+    isRealtime: true,
+    limitations: 'Бесплатно: 1000 запросов/месяц'
+  },
+  {
+    id: 'hf-t5-small',
+    name: 'T5-Small',
+    provider: 'Hugging Face',
+    description: 'Модель для задач text-to-text преобразования',
+    maxTokens: 512,
+    available: true,
+    icon: '🔄',
+    isRealtime: true,
+    limitations: 'Бесплатно: 1000 запросов/месяц'
+  },
+  {
+    id: 'g4f-gpt-3.5',
+    name: 'GPT-3.5 Turbo (Free)',
+    provider: 'G4F',
+    description: 'Бесплатный доступ к GPT-3.5 через G4F',
     maxTokens: 4096,
     available: true,
-    icon: '🧠'
+    icon: '🆓',
+    isRealtime: false,
+    limitations: 'Нестабильный, зависит от доступности'
   },
   {
-    id: 'llama-3.1-8b',
-    name: 'Llama 3.1 8B',
-    provider: 'Meta',
-    description: 'Открытая модель с высоким качеством ответов',
-    maxTokens: 2048,
-    available: true,
-    icon: '🦙'
-  },
-  {
-    id: 'gemini-pro',
-    name: 'Gemini Pro',
-    provider: 'Google',
-    description: 'Мультимодальная модель от Google',
-    maxTokens: 2048,
-    available: true,
-    icon: '💎'
-  },
-  {
-    id: 'mistral-large',
-    name: 'Mistral Large',
-    provider: 'Mistral AI',
-    description: 'Европейская модель с фокусом на безопасность',
+    id: 'g4f-claude',
+    name: 'Claude (Free)',
+    provider: 'G4F',
+    description: 'Бесплатный доступ к Claude через G4F',
     maxTokens: 4096,
     available: true,
-    icon: '🌟'
+    icon: '🧠',
+    isRealtime: false,
+    limitations: 'Нестабильный, зависит от доступности'
   }
 ];
 

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,10 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-blue-900">AICA Dashboard</h1>
+              <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                <Bot className="h-8 w-8 text-blue-600" />
+                <h1 className="text-2xl font-bold text-blue-900">AICA Dashboard</h1>
+              </Link>
               <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200">
                 Pro Plan
               </Badge>

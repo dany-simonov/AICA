@@ -1,5 +1,6 @@
 
 import { AIModel } from '@/lib/aiModels';
+import { HfInference } from '@huggingface/inference';
 
 export interface AIResponse {
   success: boolean;
@@ -7,13 +8,25 @@ export interface AIResponse {
   model: string;
   tokens?: number;
   error?: string;
+  provider: string;
+}
+
+export interface ProviderStatus {
+  provider: string;
+  status: 'working' | 'error' | 'limited';
+  message: string;
+  limitations?: string;
 }
 
 export class AIService {
   private static instance: AIService;
-  private apiKeys: Map<string, string> = new Map();
+  private hf: HfInference | null = null;
+  private providerStatuses: Map<string, ProviderStatus> = new Map();
 
-  private constructor() {}
+  private constructor() {
+    // Инициализируем Hugging Face клиент (работает без API ключа с ограничениями)
+    this.hf = new HfInference();
+  }
 
   static getInstance(): AIService {
     if (!AIService.instance) {
@@ -22,214 +35,179 @@ export class AIService {
     return AIService.instance;
   }
 
-  setApiKey(provider: string, key: string) {
-    this.apiKeys.set(provider, key);
+  async testProviders(): Promise<ProviderStatus[]> {
+    const results: ProviderStatus[] = [];
+    
+    // Тестируем Hugging Face
+    try {
+      if (this.hf) {
+        const testResponse = await this.hf.textGeneration({
+          model: 'gpt2',
+          inputs: 'Hello',
+          parameters: { max_new_tokens: 10 }
+        });
+        
+        results.push({
+          provider: 'Hugging Face',
+          status: 'working',
+          message: 'Успешно подключен',
+          limitations: 'Бесплатно: 1000 запросов/месяц, низкий приоритет'
+        });
+        
+        this.providerStatuses.set('huggingface', {
+          provider: 'Hugging Face',
+          status: 'working',
+          message: 'Работает',
+          limitations: '1000 запросов/месяц'
+        });
+      }
+    } catch (error) {
+      results.push({
+        provider: 'Hugging Face',
+        status: 'limited',
+        message: `Ограниченный доступ: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        limitations: 'Требуется API ключ для полного доступа'
+      });
+      
+      this.providerStatuses.set('huggingface', {
+        provider: 'Hugging Face',
+        status: 'limited',
+        message: 'Ограниченный доступ',
+        limitations: 'Требуется API ключ'
+      });
+    }
+
+    // Тестируем G4F (симуляция, так как G4F требует специальной настройки)
+    try {
+      // G4F требует отдельного сервера или прокси, симулируем проверку
+      results.push({
+        provider: 'G4F',
+        status: 'error',
+        message: 'Требуется настройка прокси-сервера',
+        limitations: 'Нестабильный, зависит от внешних API'
+      });
+      
+      this.providerStatuses.set('g4f', {
+        provider: 'G4F',
+        status: 'error',
+        message: 'Недоступен',
+        limitations: 'Требуется настройка'
+      });
+    } catch (error) {
+      results.push({
+        provider: 'G4F',
+        status: 'error',
+        message: `Ошибка подключения: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+
+    return results;
   }
 
   async generateResponse(model: AIModel, prompt: string): Promise<AIResponse> {
     try {
       console.log(`Generating response with ${model.name}...`);
       
-      // Имитация реального API вызова с задержкой
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+      if (model.provider === 'Hugging Face' && this.hf) {
+        return await this.generateHuggingFaceResponse(model, prompt);
+      } else if (model.provider === 'G4F') {
+        return await this.generateG4FResponse(model, prompt);
+      }
       
-      const responses = await this.getModelResponse(model, prompt);
+      // Fallback к симуляции
+      return await this.generateFallbackResponse(model, prompt);
       
-      return {
-        success: true,
-        content: responses,
-        model: model.name,
-        tokens: Math.floor(Math.random() * 500) + 100
-      };
     } catch (error) {
       console.error(`Error with ${model.name}:`, error);
       return {
         success: false,
         content: 'Извините, произошла ошибка при генерации ответа.',
         model: model.name,
+        provider: model.provider,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
   }
 
-  private async getModelResponse(model: AIModel, prompt: string): Promise<string> {
-    const lowerPrompt = prompt.toLowerCase();
-    
-    switch (model.id) {
-      case 'gpt-4o':
-        return this.getGPT4Response(lowerPrompt);
-      case 'claude-3-sonnet':
-        return this.getClaudeResponse(lowerPrompt);
-      case 'llama-3.1-8b':
-        return this.getLlamaResponse(lowerPrompt);
-      case 'gemini-pro':
-        return this.getGeminiResponse(lowerPrompt);
-      case 'mistral-large':
-        return this.getMistralResponse(lowerPrompt);
-      default:
-        return 'Модель временно недоступна.';
+  private async generateHuggingFaceResponse(model: AIModel, prompt: string): Promise<AIResponse> {
+    try {
+      if (!this.hf) throw new Error('Hugging Face client not initialized');
+      
+      let response;
+      
+      switch (model.id) {
+        case 'hf-gpt2':
+          response = await this.hf.textGeneration({
+            model: 'gpt2',
+            inputs: prompt,
+            parameters: { 
+              max_new_tokens: 100,
+              temperature: 0.7,
+              return_full_text: false
+            }
+          });
+          break;
+          
+        case 'hf-distilbert':
+          // DistilBERT для классификации
+          const classification = await this.hf.textClassification({
+            model: 'distilbert-base-uncased-finetuned-sst-2-english',
+            inputs: prompt
+          });
+          response = { generated_text: `Анализ текста: ${JSON.stringify(classification)}` };
+          break;
+          
+        case 'hf-t5-small':
+          response = await this.hf.textGeneration({
+            model: 't5-small',
+            inputs: `translate English to Russian: ${prompt}`,
+            parameters: { max_new_tokens: 100 }
+          });
+          break;
+          
+        default:
+          throw new Error('Unsupported Hugging Face model');
+      }
+      
+      return {
+        success: true,
+        content: response.generated_text || 'Ответ получен успешно',
+        model: model.name,
+        provider: model.provider,
+        tokens: Math.floor(Math.random() * 100) + 50
+      };
+      
+    } catch (error) {
+      throw new Error(`Hugging Face API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
-  private async getGPT4Response(prompt: string): Promise<string> {
-    if (prompt.includes('модел') || prompt.includes('анализ')) {
-      return `**GPT-4 Omni Analysis** 🤖
-
-Основываясь на анализе вашего запроса, рекомендую следующее:
-
-📊 **Ключевые метрики для мониторинга:**
-• Accuracy: >95% для критических решений
-• Precision/Recall: сбалансированный подход
-• F1-Score: оптимальное соотношение
-
-🔍 **Рекомендации по улучшению:**
-1. Увеличить объем обучающих данных на 30%
-2. Применить feature engineering для категориальных признаков
-3. Настроить hyperparameter tuning с Bayesian optimization
-
-⚠️ **Потенциальные риски:**
-• Data drift в production среде
-• Bias в исторических данных
-• Overfitting на тестовой выборке
-
-Хотите, чтобы я провел более детальный анализ конкретной модели?`;
-    }
-    
-    return `Привет! Я GPT-4 Omni 🤖. Я специализируюсь на сложном анализе и решении комплексных задач. Чем могу помочь с вашими ML моделями?`;
+  private async generateG4FResponse(model: AIModel, prompt: string): Promise<AIResponse> {
+    // G4F требует специальной настройки сервера, возвращаем информацию об этом
+    return {
+      success: false,
+      content: `G4F модель ${model.name} требует настройки прокси-сервера. G4F не может работать напрямую в браузере.`,
+      model: model.name,
+      provider: model.provider,
+      error: 'G4F requires proxy server setup'
+    };
   }
 
-  private async getClaudeResponse(prompt: string): Promise<string> {
-    if (prompt.includes('этик') || prompt.includes('безопасност')) {
-      return `**Claude 3 Sonnet - Этический анализ** 🧠
-
-Анализирую этические аспекты вашего ML решения:
-
-🛡️ **Принципы ответственного AI:**
-• **Справедливость**: Модель не должна дискриминировать группы
-• **Прозрачность**: Решения должны быть объяснимы
-• **Подотчетность**: Четкая ответственность за решения
-• **Конфиденциальность**: Защита персональных данных
-
-⚖️ **Рекомендации по этике:**
-1. Регулярный аудит на предвзятость (bias testing)
-2. Внедрение explainable AI методов
-3. Создание этических гайдлайнов для команды
-4. Мониторинг социального воздействия решений
-
-🔒 **Безопасность данных:**
-• Анонимизация PII данных
-• Encryption в transit и at rest
-• Access control и audit logs
-• GDPR/CCPA compliance
-
-Готов помочь с детальной проработкой этических аспектов!`;
-    }
+  private async generateFallbackResponse(model: AIModel, prompt: string): Promise<AIResponse> {
+    // Симуляция с задержкой
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
-    return `Здравствуйте! Я Claude 3 Sonnet 🧠. Специализируюсь на этическом анализе AI решений и обеспечении безопасности. Как могу помочь?`;
+    return {
+      success: true,
+      content: `[DEMO] Ответ от ${model.name}: Это демонстрационный ответ. Для получения реальных ответов необходимо настроить API ключи провайдеров.`,
+      model: model.name,
+      provider: model.provider,
+      tokens: Math.floor(Math.random() * 100) + 50
+    };
   }
 
-  private async getLlamaResponse(prompt: string): Promise<string> {
-    if (prompt.includes('код') || prompt.includes('implement')) {
-      return `**Llama 3.1 - Техническое решение** 🦙
-
-Вот практическая реализация для вашей задачи:
-
-\`\`\`python
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
-import shap
-
-class ModelAuditor:
-    def __init__(self, model, X_test, y_test):
-        self.model = model
-        self.X_test = X_test
-        self.y_test = y_test
-        self.explainer = shap.TreeExplainer(model)
-    
-    def audit_performance(self):
-        predictions = self.model.predict(self.X_test)
-        return classification_report(self.y_test, predictions)
-    
-    def explain_predictions(self, sample_idx=0):
-        shap_values = self.explainer.shap_values(self.X_test[sample_idx:sample_idx+1])
-        return shap_values
-
-# Использование:
-auditor = ModelAuditor(your_model, X_test, y_test)
-performance = auditor.audit_performance()
-\`\`\`
-
-🔧 **Дополнительные возможности:**
-• Automated retraining pipeline
-• Real-time monitoring dashboard
-• A/B testing framework
-
-Нужна помощь с конкретной реализацией?`;
-    }
-    
-    return `Привет! Я Llama 3.1 🦙. Открытая модель, специализирующаяся на практических решениях и коде. Что будем реализовывать?`;
-  }
-
-  private async getGeminiResponse(prompt: string): Promise<string> {
-    if (prompt.includes('виз') || prompt.includes('график')) {
-      return `**Gemini Pro - Визуализация данных** 💎
-
-Создам интерактивную визуализацию для анализа:
-
-📈 **Рекомендуемые виды графиков:**
-
-1. **Performance Dashboard:**
-   • ROC-AUV кривые для классификации
-   • Learning curves для анализа обучения
-   • Confusion matrix с интерактивностью
-
-2. **Feature Importance:**
-   • SHAP waterfall plots
-   • Feature correlation heatmap
-   • Partial dependence plots
-
-3. **Model Monitoring:**
-   • Real-time accuracy trends
-   • Data drift visualization
-   • Prediction confidence distribution
-
-Хотите, чтобы я создал специфическую визуализацию для ваших данных?`;
-    }
-    
-    return `Здравствуйте! Я Gemini Pro 💎. Мультимодальная модель от Google. Специализируюсь на анализе данных и создании визуализаций. Чем помочь?`;
-  }
-
-  private async getMistralResponse(prompt: string): Promise<string> {
-    if (prompt.includes('gdpr') || prompt.includes('регулир') || prompt.includes('compliance')) {
-      return `**Mistral Large - Соответствие регуляторным требованиям** 🌟
-
-Анализ соответствия AI решения европейским стандартам:
-
-🇪🇺 **EU AI Act Compliance:**
-
-**Высокорисковые AI системы требуют:**
-• Оценку рисков и система управления качеством
-• Техническую документацию
-• Автоматическое логирование
-• Human oversight
-• Точность, надежность и кибербезопасность
-
-📋 **GDPR для ML моделей:**
-1. **Right to explanation** - объяснимость решений
-2. **Data minimization** - минимум необходимых данных
-3. **Purpose limitation** - использование строго по назначению
-4. **Storage limitation** - ограниченное время хранения
-
-🚨 **Штрафы за несоответствие:**
-• GDPR: до 4% от оборота или €20M
-• AI Act: до 7% от оборота или €35M
-
-Помочь с конкретным compliance checklist?`;
-    }
-    
-    return `Bonjour! Я Mistral Large 🌟. Европейская модель с фокусом на безопасность и соответствие регуляторным требованиям. Как дела с compliance?`;
+  getProviderStatuses(): ProviderStatus[] {
+    return Array.from(this.providerStatuses.values());
   }
 
   async testAllModels(): Promise<Map<string, AIResponse>> {
