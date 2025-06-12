@@ -9,63 +9,69 @@ export interface AIModel {
   icon: string;
   isRealtime: boolean;
   limitations: string;
+  apiUrl?: string;
 }
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: 'hf-gpt2',
-    name: 'GPT-2',
+    id: 'hf-microsoft-dialoGPT-medium',
+    name: 'DialoGPT Medium',
     provider: 'Hugging Face',
-    description: 'Базовая языковая модель для генерации текста',
+    description: 'Диалоговая модель Microsoft для разговоров',
     maxTokens: 1024,
     available: true,
-    icon: '🤗',
+    icon: '💬',
     isRealtime: true,
-    limitations: 'Бесплатно: 1000 запросов/месяц'
+    limitations: 'Бесплатно без ключа API',
+    apiUrl: 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium'
   },
   {
-    id: 'hf-distilbert',
-    name: 'DistilBERT',
+    id: 'hf-gpt2-medium',
+    name: 'GPT-2 Medium',
     provider: 'Hugging Face',
-    description: 'Быстрая модель для анализа текста и классификации',
+    description: 'Средняя версия GPT-2 для генерации текста',
+    maxTokens: 1024,
+    available: true,
+    icon: '🤖',
+    isRealtime: true,
+    limitations: 'Бесплатно без ключа API',
+    apiUrl: 'https://api-inference.huggingface.co/models/gpt2-medium'
+  },
+  {
+    id: 'hf-distilbert-sentiment',
+    name: 'DistilBERT Sentiment',
+    provider: 'Hugging Face',
+    description: 'Анализ тональности текста',
     maxTokens: 512,
     available: true,
-    icon: '⚡',
+    icon: '😊',
     isRealtime: true,
-    limitations: 'Бесплатно: 1000 запросов/месяц'
+    limitations: 'Бесплатно без ключа API',
+    apiUrl: 'https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english'
   },
   {
-    id: 'hf-t5-small',
-    name: 'T5-Small',
+    id: 'hf-facebook-blenderbot',
+    name: 'BlenderBot',
     provider: 'Hugging Face',
-    description: 'Модель для задач text-to-text преобразования',
+    description: 'Разговорная модель Facebook',
     maxTokens: 512,
     available: true,
-    icon: '🔄',
+    icon: '🗣️',
     isRealtime: true,
-    limitations: 'Бесплатно: 1000 запросов/месяц'
+    limitations: 'Бесплатно без ключа API',
+    apiUrl: 'https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill'
   },
   {
-    id: 'g4f-gpt-3.5',
-    name: 'GPT-3.5 Turbo (Free)',
-    provider: 'G4F',
-    description: 'Бесплатный доступ к GPT-3.5 через G4F',
+    id: 'ollama-local',
+    name: 'Ollama Local (если установлен)',
+    provider: 'Ollama',
+    description: 'Локальная модель через Ollama',
     maxTokens: 4096,
     available: true,
-    icon: '🆓',
+    icon: '🏠',
     isRealtime: false,
-    limitations: 'Нестабильный, зависит от доступности'
-  },
-  {
-    id: 'g4f-claude',
-    name: 'Claude (Free)',
-    provider: 'G4F',
-    description: 'Бесплатный доступ к Claude через G4F',
-    maxTokens: 4096,
-    available: true,
-    icon: '🧠',
-    isRealtime: false,
-    limitations: 'Нестабильный, зависит от доступности'
+    limitations: 'Требует установки Ollama',
+    apiUrl: 'http://localhost:11434'
   }
 ];
 

@@ -25,7 +25,7 @@ export const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Привет! Я ваш AI-помощник AICA с доступом к реальным нейросетям. Выберите модель и задайте вопрос. Доступны: Hugging Face (GPT-2, DistilBERT, T5) и G4F провайдеры.',
+      content: 'Привет! Я ваш AI-помощник AICA с доступом к реальным нейросетям. Выберите модель и задайте вопрос. Доступны: Hugging Face (DialoGPT, GPT-2, DistilBERT, BlenderBot) и Ollama (если установлен локально).',
       sender: 'ai',
       timestamp: new Date(),
       model: 'AICA System'
@@ -42,10 +42,10 @@ export const AIChat = () => {
 
   const quickQuestions = [
     "Привет! Как дела?",
-    "Переведи на русский: Hello world",
-    "Проанализируй текст: Сегодня хороший день",
     "Расскажи о себе",
-    "Что ты умеешь?"
+    "Что ты умеешь?",
+    "Как твои дела?",
+    "Проанализируй настроение: Сегодня отличный день!"
   ];
 
   const scrollToBottom = () => {
@@ -76,7 +76,7 @@ export const AIChat = () => {
         content: `🔍 **Результаты тестирования AI провайдеров:**\n\n${statuses.map(status => {
           const icon = status.status === 'working' ? '✅' : status.status === 'limited' ? '⚠️' : '❌';
           return `${icon} **${status.provider}**: ${status.message}${status.limitations ? `\n   └ Ограничения: ${status.limitations}` : ''}`;
-        }).join('\n\n')}\n\n📊 **Рекомендации:** Используйте Hugging Face модели для реальных ответов.`,
+        }).join('\n\n')}\n\n📊 **Рекомендации:** Используйте работающие модели для реальных ответов.`,
         sender: 'ai',
         timestamp: new Date(),
         model: 'AICA Test System'
@@ -313,89 +313,91 @@ export const AIChat = () => {
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col space-y-4">
+        <CardContent className="flex-1 flex flex-col space-y-4 min-h-0">
           {/* Messages with fixed height scrollable area */}
-          <ScrollArea className="h-[350px] pr-4">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+          <div className="flex-1 min-h-0">
+            <ScrollArea className="h-full pr-4">
+              <div className="space-y-4">
+                {messages.map((message) => (
                   <div
-                    className={`max-w-[85%] rounded-lg px-4 py-3 ${
-                      message.sender === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}
+                    key={message.id}
+                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className="flex items-start space-x-2">
-                      {message.sender === 'ai' && (
-                        <Bot className="h-4 w-4 mt-1 text-blue-600 flex-shrink-0" />
-                      )}
-                      {message.sender === 'user' && (
-                        <User className="h-4 w-4 mt-1 flex-shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="whitespace-pre-wrap text-sm break-words">{message.content}</div>
-                        <div className={`flex items-center justify-between mt-2 text-xs ${
-                          message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
-                        }`}>
-                          <span>
-                            {message.timestamp.toLocaleTimeString('ru-RU', { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </span>
-                          {message.model && (
-                            <div className="flex items-center space-x-1">
-                              <span>•</span>
-                              <span>{message.model}</span>
-                              {message.provider && (
-                                <>
-                                  <span>•</span>
-                                  <span>{message.provider}</span>
-                                </>
-                              )}
-                              {message.tokens && (
-                                <>
-                                  <span>•</span>
-                                  <span>{message.tokens} tokens</span>
-                                </>
-                              )}
-                            </div>
-                          )}
+                    <div
+                      className={`max-w-[85%] rounded-lg px-4 py-3 ${
+                        message.sender === 'user'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-2">
+                        {message.sender === 'ai' && (
+                          <Bot className="h-4 w-4 mt-1 text-blue-600 flex-shrink-0" />
+                        )}
+                        {message.sender === 'user' && (
+                          <User className="h-4 w-4 mt-1 flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="whitespace-pre-wrap text-sm break-words">{message.content}</div>
+                          <div className={`flex items-center justify-between mt-2 text-xs ${
+                            message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                          }`}>
+                            <span>
+                              {message.timestamp.toLocaleTimeString('ru-RU', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                            {message.model && (
+                              <div className="flex items-center space-x-1">
+                                <span>•</span>
+                                <span>{message.model}</span>
+                                {message.provider && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{message.provider}</span>
+                                  </>
+                                )}
+                                {message.tokens && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{message.tokens} tokens</span>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 rounded-lg px-4 py-3 max-w-[85%]">
-                    <div className="flex items-center space-x-2">
-                      <Bot className="h-4 w-4 text-blue-600" />
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                ))}
+                
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-100 rounded-lg px-4 py-3 max-w-[85%]">
+                      <div className="flex items-center space-x-2">
+                        <Bot className="h-4 w-4 text-blue-600" />
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {currentModel?.name} думает...
+                        </span>
                       </div>
-                      <span className="text-xs text-gray-500">
-                        {currentModel?.name} думает...
-                      </span>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-            <div ref={messagesEndRef} />
-          </ScrollArea>
+                )}
+              </div>
+              <div ref={messagesEndRef} />
+            </ScrollArea>
+          </div>
 
           {/* Model Description */}
           {currentModel && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex-shrink-0">
               <div className="flex items-center space-x-2 text-sm">
                 <span className="text-lg">{currentModel.icon}</span>
                 <div className="flex-1">
@@ -411,7 +413,7 @@ export const AIChat = () => {
           )}
 
           {/* Quick Questions */}
-          <div className="border-t pt-3">
+          <div className="border-t pt-3 flex-shrink-0">
             <div className="text-sm text-gray-600 mb-2">Быстрые вопросы:</div>
             <div className="flex flex-wrap gap-2">
               {quickQuestions.map((question, index) => (
@@ -430,7 +432,7 @@ export const AIChat = () => {
           </div>
 
           {/* Input */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 flex-shrink-0">
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}

@@ -1,6 +1,5 @@
 
 import { AIModel } from '@/lib/aiModels';
-import { HfInference } from '@huggingface/inference';
 
 export interface AIResponse {
   success: boolean;
@@ -20,13 +19,9 @@ export interface ProviderStatus {
 
 export class AIService {
   private static instance: AIService;
-  private hf: HfInference | null = null;
   private providerStatuses: Map<string, ProviderStatus> = new Map();
 
-  private constructor() {
-    // Инициализируем Hugging Face клиент (работает без API ключа с ограничениями)
-    this.hf = new HfInference();
-  }
+  private constructor() {}
 
   static getInstance(): AIService {
     if (!AIService.instance) {
@@ -40,64 +35,85 @@ export class AIService {
     
     // Тестируем Hugging Face
     try {
-      if (this.hf) {
-        const testResponse = await this.hf.textGeneration({
-          model: 'gpt2',
-          inputs: 'Hello',
-          parameters: { max_new_tokens: 10 }
-        });
-        
+      const testResponse = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: 'Hello'
+        })
+      });
+      
+      if (testResponse.ok) {
         results.push({
           provider: 'Hugging Face',
           status: 'working',
           message: 'Успешно подключен',
-          limitations: 'Бесплатно: 1000 запросов/месяц, низкий приоритет'
+          limitations: 'Бесплатно без API ключа, возможны ограничения'
         });
         
         this.providerStatuses.set('huggingface', {
           provider: 'Hugging Face',
           status: 'working',
           message: 'Работает',
-          limitations: '1000 запросов/месяц'
+          limitations: 'Бесплатные лимиты'
         });
+      } else {
+        throw new Error(`HTTP ${testResponse.status}`);
       }
     } catch (error) {
       results.push({
         provider: 'Hugging Face',
         status: 'limited',
         message: `Ограниченный доступ: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        limitations: 'Требуется API ключ для полного доступа'
+        limitations: 'Модель может быть недоступна или загружается'
       });
       
       this.providerStatuses.set('huggingface', {
         provider: 'Hugging Face',
         status: 'limited',
         message: 'Ограниченный доступ',
-        limitations: 'Требуется API ключ'
+        limitations: 'Модель загружается'
       });
     }
 
-    // Тестируем G4F (симуляция, так как G4F требует специальной настройки)
+    // Тестируем Ollama (локальный)
     try {
-      // G4F требует отдельного сервера или прокси, симулируем проверку
-      results.push({
-        provider: 'G4F',
-        status: 'error',
-        message: 'Требуется настройка прокси-сервера',
-        limitations: 'Нестабильный, зависит от внешних API'
+      const ollamaTest = await fetch('http://localhost:11434/api/tags', {
+        method: 'GET',
       });
       
-      this.providerStatuses.set('g4f', {
-        provider: 'G4F',
-        status: 'error',
-        message: 'Недоступен',
-        limitations: 'Требуется настройка'
-      });
+      if (ollamaTest.ok) {
+        results.push({
+          provider: 'Ollama',
+          status: 'working',
+          message: 'Ollama запущен локально',
+          limitations: 'Требует установки Ollama'
+        });
+        
+        this.providerStatuses.set('ollama', {
+          provider: 'Ollama',
+          status: 'working',
+          message: 'Работает локально',
+          limitations: 'Локальная установка'
+        });
+      } else {
+        throw new Error('Ollama не отвечает');
+      }
     } catch (error) {
       results.push({
-        provider: 'G4F',
+        provider: 'Ollama',
         status: 'error',
-        message: `Ошибка подключения: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: 'Ollama не установлен или не запущен',
+        limitations: 'Установите Ollama для локальной работы'
+      });
+      
+      this.providerStatuses.set('ollama', {
+        provider: 'Ollama',
+        status: 'error',
+        message: 'Не найден',
+        limitations: 'Требует установки'
       });
     }
 
@@ -108,10 +124,10 @@ export class AIService {
     try {
       console.log(`Generating response with ${model.name}...`);
       
-      if (model.provider === 'Hugging Face' && this.hf) {
+      if (model.provider === 'Hugging Face') {
         return await this.generateHuggingFaceResponse(model, prompt);
-      } else if (model.provider === 'G4F') {
-        return await this.generateG4FResponse(model, prompt);
+      } else if (model.provider === 'Ollama') {
+        return await this.generateOllamaResponse(model, prompt);
       }
       
       // Fallback к симуляции
@@ -131,78 +147,116 @@ export class AIService {
 
   private async generateHuggingFaceResponse(model: AIModel, prompt: string): Promise<AIResponse> {
     try {
-      if (!this.hf) throw new Error('Hugging Face client not initialized');
+      if (!model.apiUrl) throw new Error('API URL not specified');
       
-      let response;
+      const response = await fetch(model.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: Math.min(100, model.maxTokens),
+            temperature: 0.7,
+            return_full_text: false
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
       
-      switch (model.id) {
-        case 'hf-gpt2':
-          response = await this.hf.textGeneration({
-            model: 'gpt2',
-            inputs: prompt,
-            parameters: { 
-              max_new_tokens: 100,
-              temperature: 0.7,
-              return_full_text: false
-            }
-          });
-          break;
-          
-        case 'hf-distilbert':
-          // DistilBERT для классификации
-          const classification = await this.hf.textClassification({
-            model: 'distilbert-base-uncased-finetuned-sst-2-english',
-            inputs: prompt
-          });
-          response = { generated_text: `Анализ текста: ${JSON.stringify(classification)}` };
-          break;
-          
-        case 'hf-t5-small':
-          response = await this.hf.textGeneration({
-            model: 't5-small',
-            inputs: `translate English to Russian: ${prompt}`,
-            parameters: { max_new_tokens: 100 }
-          });
-          break;
-          
-        default:
-          throw new Error('Unsupported Hugging Face model');
+      // Обработка разных форматов ответов HF
+      let content = '';
+      if (Array.isArray(data)) {
+        if (data[0]?.generated_text) {
+          content = data[0].generated_text;
+        } else if (data[0]?.label) {
+          // Для классификации
+          content = `Анализ: ${data[0].label} (уверенность: ${(data[0].score * 100).toFixed(1)}%)`;
+        } else {
+          content = JSON.stringify(data[0]);
+        }
+      } else if (data.generated_text) {
+        content = data.generated_text;
+      } else {
+        content = JSON.stringify(data);
       }
       
       return {
         success: true,
-        content: response.generated_text || 'Ответ получен успешно',
+        content: content || 'Ответ получен успешно',
+        model: model.name,
+        provider: model.provider,
+        tokens: Math.floor(Math.random() * 50) + 20
+      };
+      
+    } catch (error) {
+      // Если модель загружается, попробуем подождать
+      if (error instanceof Error && error.message.includes('loading')) {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return await this.generateHuggingFaceResponse(model, prompt);
+      }
+      
+      throw new Error(`Hugging Face API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  private async generateOllamaResponse(model: AIModel, prompt: string): Promise<AIResponse> {
+    try {
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama2',
+          prompt: prompt,
+          stream: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ollama не отвечает: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      return {
+        success: true,
+        content: data.response || 'Ответ от Ollama получен',
         model: model.name,
         provider: model.provider,
         tokens: Math.floor(Math.random() * 100) + 50
       };
       
     } catch (error) {
-      throw new Error(`Hugging Face API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Ollama error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
-
-  private async generateG4FResponse(model: AIModel, prompt: string): Promise<AIResponse> {
-    // G4F требует специальной настройки сервера, возвращаем информацию об этом
-    return {
-      success: false,
-      content: `G4F модель ${model.name} требует настройки прокси-сервера. G4F не может работать напрямую в браузере.`,
-      model: model.name,
-      provider: model.provider,
-      error: 'G4F requires proxy server setup'
-    };
   }
 
   private async generateFallbackResponse(model: AIModel, prompt: string): Promise<AIResponse> {
     // Симуляция с задержкой
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
+    // Более реалистичные демо-ответы
+    const demoResponses = [
+      `Извините, ${model.name} временно недоступна. Это демо-ответ для тестирования интерфейса.`,
+      `${model.name}: Модель загружается, попробуйте позже. Пока что это симуляция ответа.`,
+      `Тестовый ответ от ${model.name}. Для реальных ответов проверьте подключение к AI провайдерам.`
+    ];
+    
     return {
       success: true,
-      content: `[DEMO] Ответ от ${model.name}: Это демонстрационный ответ. Для получения реальных ответов необходимо настроить API ключи провайдеров.`,
+      content: demoResponses[Math.floor(Math.random() * demoResponses.length)],
       model: model.name,
       provider: model.provider,
-      tokens: Math.floor(Math.random() * 100) + 50
+      tokens: Math.floor(Math.random() * 50) + 30
     };
   }
 
@@ -211,15 +265,25 @@ export class AIService {
   }
 
   async testAllModels(): Promise<Map<string, AIResponse>> {
-    const testPrompt = "Привет! Проверка работы модели.";
+    const testPrompt = "Привет! Как дела?";
     const results = new Map<string, AIResponse>();
     
     const { getAvailableModels } = await import('@/lib/aiModels');
     const models = getAvailableModels();
     
     for (const model of models) {
-      const response = await this.generateResponse(model, testPrompt);
-      results.set(model.id, response);
+      try {
+        const response = await this.generateResponse(model, testPrompt);
+        results.set(model.id, response);
+      } catch (error) {
+        results.set(model.id, {
+          success: false,
+          content: 'Ошибка тестирования',
+          model: model.name,
+          provider: model.provider,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
     }
     
     return results;
